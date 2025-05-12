@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fra selvstendighet til krig og kriser</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-image: url('media/historie_bakgrunn.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .question-container {
+            background-color: #e6f2ff; /* Lyseblå farge */
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .question {
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            color: #003366;
+        }
+        .options {
+            margin-left: 15px;
+        }
+        .option {
+            margin-bottom: 10px;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.7);
+            transition: background-color 0.2s;
+        }
+        .option:hover {
+            background-color: rgba(200, 230, 255, 0.9);
+        }
+        .option input {
+            margin-right: 10px;
+        }
+        .feedback {
+            margin-top: 15px;
+            font-weight: bold;
+            padding: 12px;
+            border-radius: 5px;
+            display: none;
+            text-align: center;
+        }
+        .correct {
+            color: #006600;
+            background-color: #ccffcc;
+        }
+        .incorrect {
+            color: #990000;
+            background-color: #ffdddd;
+        }
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #0066cc;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1em;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: #004d99;
+        }
+        button:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+        .summary {
+            text-align: center;
+            display: none;
+            background-color: #e6f2ff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .progress {
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: white;
+            background-color: rgba(0, 51, 102, 0.7);
+            padding: 8px;
+            border-radius: 20px;
+        }
+        @media print {
+            body {
+                background-image: none;
+                background-color: white;
+            }
+            .question-container, .summary {
+                background-color: white;
+                box-shadow: none;
+                border: 1px solid #ccc;
+            }
+            button {
+                display: none;
+            }
+            .progress {
+                color: black;
+                background-color: white;
+                border: 1px solid #ccc;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Fra selvstendighet til krig og kriser</h1>
+    <div class="progress">Spørsmål <span id="current-question">1</span> av 30</div>
+    
+    <div id="quiz-container">
+        <!-- Questions will be inserted here by JavaScript -->
+    </div>
+    
+    <div class="navigation">
+        <button id="prev-btn" disabled>Forrige</button>
+        <button id="next-btn" disabled>Neste</button>
+    </div>
+    
+    <div id="summary" class="summary">
+        <h2>Oppsummering</h2>
+        <p>Du fikk <span id="score">0</span> av 30 riktige!</p>
+        <button id="restart-btn">Start på nytt</button>
+        <button id="print-btn">Skriv ut resultat</button>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "Hvilket år oppløstes unionen mellom Norge og Sverige?",
+                options: ["1900", "1905", "1910", "1914"],
+                correctAnswer: 1
+            },
+            {
+                question: "Hva la grunnlaget for ny storindustri i Norge etter 1905?",
+                options: ["Oljeindustrien", "Vannkraftutbyggingen", "Skipsbygging", "Gruvedrift"],
+                correctAnswer: 1
+            },
+            {
+                question: "Hvilken hendelse førte til at Norge ble kalt 'den nøytrale allierte' under første verdenskrig?",
+                options: ["Norge erklærte krig mot Tyskland", "Norge eksporterte krigsviktige materialer til Storbritannia", "Norge invaderte Sverige", "Norge ble med i sentralmaktene"],
+                correctAnswer: 1
+            },
+            {
+                question: "Hvilket år ble allmenn stemmerett for kvinner innført i Norge?",
+                options: ["1905", "1913", "1920", "1925"],
+                correctAnswer: 1
+            },
+            {
+                question: "Hvem stiftet den første kvinnesaksorganisasjonen i Norge i 1884?",
+                options: ["Katti Anker Møller", "Gina Krogh", "Camilla Collett", "Aasta Hansteen"],
+                correctAnswer: 1
+            },
+            {
+                question: "Hva var et av hovedmålene til kvinnesaksorganisasjonene på begynnelsen av 1900-tallet?",
+                options: ["Forbud mot alkohol", "Stemmerett for kvinner", "Like lønn for kvinner", "Gratis utdanning for alle"],
+                correctAnswer: 1
+            },
+            {
+                question: "Hva ble konsekvensen av første verdenskrig for den norske økonomien?",
+                options: ["Alle ble rikere", "Forskjellene mellom rike og fattige økte", "Økonomien forble uendret", "Norge ble verdens rikeste land"],
+                correctAnswer: 1
+            },
+            {
+                question: "Hva ble begrepet 'dyrtid' brukt om i Norge under første verdenskrig?",
+                options: ["At matvarer ble billigere", "At folk hadde for mye penger", "Høy prisstigning og vanskelige tider", "At importen økte kraftig"],
+                correctAnswer: 2
+            },
+            {
+                question: "Hva var en viktig årsak til at statens rolle vokste under første verdenskrig?",
+                options: ["Behovet for nye reguleringstiltak", "At kongen ville ha mer makt", "At kommunene ikke klarte å styre", "At folk ikke ville betale skatt"],
+                correctAnswer: 0
+            },
+            {
+                question: "Hvilken type tiltak ble innført under første verdenskrig for å håndtere matmangel?",
+                options: ["Rasjonering", "Matgave til alle", "Importforbud", "Eksportsubsidier"],
+                correctAnswer: 0
+            },
+            {
+                question: "Hva var et av hovedmålene til Katti Anker Møller?",
+                options: ["Forbud mot kvinner i arbeidslivet", "Avkriminalisering av abort", "Innføring av dødsstraff", "Forbud mot utdanning for kvinner"],
+                correctAnswer: 1
+            },
+            {
+                question: "Hvilket år startet Katti Anker Møller opp det første mødrehygienekontoret?",
+                options: ["1910", "1918", "1924", "1930"],
+                correctAnswer: 2
+            },
+            {
+                question: "Hva var en viktig årsak til klassekampene i Norge i perioden 1920-1933?",
+                options: ["Alle var enige om alt", "Store forskjeller mellom arbeidere og borgerskap", "At ingen ville jobbe", "At staten kontrollerte alt"],
+                correctAnswer: 1
+            },
+            {
+                question: "Hvilket parti ble stiftet i 1920 for å kjempe for bøndenes interesser?",
+                options: ["Arbeiderpartiet", "Høyre", "Bondepartiet", "Venstre"],
+                correctAnswer: 2
+            },
+            {
+                question: "Hvor mange forskjellige regjeringer var det i Norge mellom 1920 og 1933?",
+                options: ["3", "6", "12", "20"],
+                correctAnswer: 2
+            },
+            {
+                question: "Hva var en av arbeidernes hovedkrav i denne perioden?",
+                options: ["Lengre arbeidsdager", "Mindre lønn", "Åttetimers arbeidsdag", "Færre fridager"],
+                correctAnswer: 2
+            },
+            {
+                question: "Hva var en viktig årsak til at Norge ble avhengig av Storbritannia under første verdenskrig?",
+                options: ["Norge hadde lav selvforsyningsgrad", "Norge hadde for mye mat", "Norge ikke likte Tyskland", "Norge ville bli koloni"],
+                correctAnswer: 0
+            },
+            {
+                question: "Hvor mange norske sjøfolk mistet livet under første verdenskrig?",
+                options: ["200", "500", "1000", "2000"],
+                correctAnswer: 3
+            },
+            {
+                question: "Hvor stor del av den norske handelsflåten ble senket under første verdenskrig?",
+                options: ["En tredjedel", "Halvparten", "To tredjedeler", "Nesten alt"],
+                correctAnswer: 1
+            },
+            {
+                question: "Hvem var Martin Tranmæl?",
+                options: ["En norsk forfatter", "En leder i Arbeiderpartiet", "En norsk oppdager", "En norsk bankmann"],
+                correctAnswer: 1
+            },
+            {
+                question: "Hva var en viktig årsak til at revolusjonen Arbeiderpartiet først ønsket ikke skjedde?",
+                options: ["Staten innførte reformer", "Folk likte ikke Tranmæl", "Kongen stoppet den", "Sverige truet med krig"],
+                correctAnswer: 0
+            },
+            {
+                question: "Hva var en viktig årsak til den økonomiske krisen etter første verdenskrig?",
+                options: ["Bankene ga ut for mye lån", "Alle var for forsiktige", "Staten tok alle pengene", "Det var ingen krise"],
+                correctAnswer: 0
+            },
+            {
+                question: "Hvor mange norske banker gikk konkurs i denne perioden?",
+                options: ["Mindre enn 10", "Over 100", "Omtrent 50", "Alle banker"],
+                correctAnswer: 1
+            },
+            {
+                question: "Hva var pari-krisen?",
+                options: ["En krise da man skulle gå tilbake til gullstandard", "En krise i pariserlivet", "En krise i handelen med Frankrike", "En krise i norsk idrett"],
+                correctAnswer: 0
+            },
+            {
+                question: "Hva var et viktig kulturfenomen i Norge i begynnelsen av 1900-tallet?",
+                options: ["Starten på kinoen", "Første TV-sendinger", "Første rockekonsert", "Første fotballkamp"],
+                correctAnswer: 0
+            },
+            {
+                question: "Hva skjedde med navnet Kristiania i 1925?",
+                options: ["Det ble endret til Oslo", "Det ble endret til Norgeby", "Det ble endret til Vikingbyen", "Det forble uendret"],
+                correctAnswer: 0
+            },
+            {
+                question: "Hvilket parti ble stiftet i 1933 og ledet av Vidkun Quisling?",
+                options: ["Arbeiderpartiet", "Nasjonal Samling", "Høyre", "Bondepartiet"],
+                correctAnswer: 1
+            },
+            {
+                question: "Hva var et viktig sosialpolitisk tiltak i 1909?",
+                options: ["Sykeforsikring", "Bilforsikring", "Reiseforsikring", "Husforsikring"],
+                correctAnswer: 0
+            },
+            {
+                question: "Hva var De Castbergske barnelover?",
+                options: ["Lover om skolegang", "Lover som ga rettigheter til barn født utenfor ekteskap", "Lover om barnearbeid", "Lover om barnevern"],
+                correctAnswer: 1
+            },
+            {
+                question: "Hvilket år fikk Arbeiderpartiet regjeringsmakten med støtte fra Bondepartiet?",
+                options: ["1920", "1925", "1930", "1935"],
+                correctAnswer: 3
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let userAnswers = new Array(questions.length).fill(null);
+
+        const quizContainer = document.getElementById('quiz-container');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const summary = document.getElementById('summary');
+        const currentQuestionSpan = document.getElementById('current-question');
+        const scoreSpan = document.getElementById('score');
+        const restartBtn = document.getElementById('restart-btn');
+        const printBtn = document.getElementById('print-btn');
+
+        function displayQuestion() {
+            currentQuestionSpan.textContent = currentQuestion + 1;
+            
+            const question = questions[currentQuestion];
+            let optionsHtml = '';
+            
+            question.options.forEach((option, index) => {
+                const isChecked = userAnswers[currentQuestion] === index ? 'checked' : '';
+                optionsHtml += `
+                    <div class="option">
+                        <input type="radio" id="option${index}" name="answer" value="${index}" ${isChecked}>
+                        <label for="option${index}">${option}</label>
+                    </div>
+                `;
+            });
+            
+            quizContainer.innerHTML = `
+                <div class="question-container">
+                    <div class="question">${question.question}</div>
+                    <div class="options">${optionsHtml}</div>
+                    <div id="feedback" class="feedback"></div>
+                </div>
+            `;
+            
+            // Add event listeners to radio buttons
+            document.querySelectorAll('input[name="answer"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    userAnswers[currentQuestion] = parseInt(this.value);
+                    nextBtn.disabled = false;
+                });
+            });
+            
+            // Update navigation buttons
+            prevBtn.disabled = currentQuestion === 0;
+            nextBtn.disabled = userAnswers[currentQuestion] === null;
+            
+            // Hide feedback when moving to a new question
+            document.getElementById('feedback').style.display = 'none';
+        }
+
+        function checkAnswer() {
+            const selectedOption = userAnswers[currentQuestion];
+            const feedback = document.getElementById('feedback');
+            
+            if (selectedOption === questions[currentQuestion].correctAnswer) {
+                feedback.textContent = 'Svaret er riktig!';
+                feedback.className = 'feedback correct';
+                score++;
+            } else {
+                feedback.textContent = 'Svaret er dessverre feil';
+                feedback.className = 'feedback incorrect';
+            }
+            
+            feedback.style.display = 'block';
+            nextBtn.disabled = false;
+        }
+
+        function showSummary() {
+            quizContainer.style.display = 'none';
+            document.querySelector('.navigation').style.display = 'none';
+            summary.style.display = 'block';
+            scoreSpan.textContent = score;
+        }
+
+        prevBtn.addEventListener('click', function() {
+            currentQuestion--;
+            displayQuestion();
+        });
+
+        nextBtn.addEventListener('click', function() {
+            if (currentQuestion < questions.length - 1) {
+                checkAnswer();
+                setTimeout(() => {
+                    currentQuestion++;
+                    displayQuestion();
+                }, 1000);
+            } else {
+                checkAnswer();
+                setTimeout(showSummary, 1000);
+            }
+        });
+
+        restartBtn.addEventListener('click', function() {
+            currentQuestion = 0;
+            score = 0;
+            userAnswers = new Array(questions.length).fill(null);
+            quizContainer.style.display = 'block';
+            document.querySelector('.navigation').style.display = 'flex';
+            summary.style.display = 'none';
+            displayQuestion();
+        });
+
+        printBtn.addEventListener('click', function() {
+            window.print();
+        });
+
+        // Initialize the quiz
+        displayQuestion();
+    </script>
+</body>
+</html>
